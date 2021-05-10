@@ -46,7 +46,7 @@ public class Product implements java.io.Serializable {
 
 	@Column(name = "name", nullable = false)
 	@NotNull
-	@Size(min = 4, max = 255)
+	@Size(min = 4, max = 300)
 	@NotEmpty
 	private String name;
 

@@ -113,6 +113,12 @@ public class ShoppingProdutServiceImpl implements ShoppingProductService {
 		return shoppingProductRepository.totalItems(carId);
 	}
 
+	@Override
+	public List<ShoppingProduct> findShprByCarId(Integer carId) {
+		
+		return shoppingProductRepository.findShprByCarId(carId);
+	}
+
 
 
 }

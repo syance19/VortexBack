@@ -61,7 +61,6 @@ public class CartServiceImpl implements CartService {
 	@Override
 	@Transactional(readOnly = false)
 	public ShoppingProduct addProduct(Integer carId, String proId, Integer quantity) throws Exception {
-
 		ShoppingCart shoppingCart = null;
 		Product product = null;
 		ShoppingProduct shoppingProduct = null;
@@ -69,41 +68,30 @@ public class CartServiceImpl implements CartService {
 		Long totalShoppingCart = 0L;
 		Integer itemsShoppingCart = 0;
 		Integer cantidadShpr = 0;
-
 		if (carId == null || carId <= 0) {
 			throw new Exception("El carId es nulo o menor a cero");
 		}
-
 		if (proId == null || proId.isBlank() == true) {
 			throw new Exception("El proId es nulo o menor a esta en blanco");
 		}
-
 		if (quantity == null || quantity <= 0) {
 			throw new Exception("El quantity es nulo o menor a cero");
 		}
-
 		if (shoppingCartService.findById(carId).isPresent() == false) {
 			throw new Exception("El shoppingCart con carId no existe");
 		}
-
 		shoppingCart = shoppingCartService.findById(carId).get();
-
 		if (shoppingCart.getEnable().equals("N") == true) {
 			throw new Exception("El shoppingCart esta inhabilitado");
 		}
-
 		if (productService.findById(proId).isPresent() == false) {
 			throw new Exception("El product no existe");
 		}
-
 		product = productService.findById(proId).get();
-
 		if (product.getEnable().equals("N") == true) {
 			throw new Exception("El product esta inhabilitado");
 		}
-
 		shoppingProduct = shoppingProductService.getShprByCarPro(carId, proId);
-
 		if (shoppingProduct == null) {
 			shoppingProduct = new ShoppingProduct();
 			shoppingProduct.setProduct(product);
@@ -120,19 +108,58 @@ public class CartServiceImpl implements CartService {
 			shoppingProduct.setTotal(totalShoppingProduct);
 			shoppingProduct = shoppingProductService.update(shoppingProduct);
 		}
-
 		totalShoppingCart = shoppingProductService.totalShoppingProductByShoppingCart(carId);
 		itemsShoppingCart = shoppingProductService.totalItems(carId);
 		shoppingCart.setTotal(totalShoppingCart);
 		shoppingCart.setItems(itemsShoppingCart);
 		shoppingCartService.update(shoppingCart);
-
 		return shoppingProduct;
 	}
 
 	@Override
 	public void removeProduct(Integer carId, String proId) throws Exception {
+		ShoppingCart shoppingCart = null;
+		Product product = null;
+		ShoppingProduct shoppingProduct = null;
+		Long totalShoppingCart = 0L;
+		Integer itemsShoppingCart = 0;
+		if (carId == null || carId <= 0) {
+			throw new Exception("El carId es nulo o menor a cero");
+		}
 
+		if (proId == null || proId.isBlank() == true) {
+			throw new Exception("El proId es nulo o menor o esta en blanco");
+		}
+		if (shoppingCartService.findById(carId).isPresent() == false) {
+			throw new Exception("El shoppingCart con carId " + carId + " no existe");
+		}
+		shoppingCart = shoppingCartService.findById(carId).get();
+		if (shoppingCart.getEnable().equals("N") == true) {
+			throw new Exception("El shoppingCart esta inhabilitado");
+		}
+		if (productService.findById(proId).isPresent() == false) {
+			throw new Exception("El product no existe");
+		}
+
+		product = productService.findById(proId).get();
+
+		if (product.getEnable().equals("N") == true) {
+			throw new Exception("El product esta inhabilitado");
+		}
+		shoppingProduct = shoppingProductService.getShprByCarPro(carId, proId);
+		if (shoppingProduct == null) {
+			throw new Exception("No hay ningun shoppingProduct con carId: " + carId + " y proId: " + proId);
+		}
+		shoppingProductService.delete(shoppingProduct);
+		totalShoppingCart = shoppingProductService.totalShoppingProductByShoppingCart(carId);
+		itemsShoppingCart = shoppingProductService.totalItems(carId);
+		if (totalShoppingCart == null || itemsShoppingCart == null) {
+			totalShoppingCart = 0L;
+			itemsShoppingCart = 0;
+		}
+		shoppingCart.setTotal(totalShoppingCart);
+		shoppingCart.setItems(itemsShoppingCart);
+		shoppingCartService.update(shoppingCart);
 	}
 
 	@Override
@@ -143,7 +170,19 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public List<ShoppingProduct> findShoppingProductByShoppingCart(Integer carId) throws Exception {
 
-		return null;
+		ShoppingCart shoppingCart = null;
+		if (carId == null || carId <= 0) {
+			throw new Exception("El carId es nulo o menor a cero");
+		}
+
+		if (shoppingCartService.findById(carId).isPresent() == false) {
+			throw new Exception("El shoppingCart con carId " + carId + " no existe");
+		}
+		shoppingCart = shoppingCartService.findById(carId).get();
+		if (shoppingCart.getEnable().equals("N") == true) {
+			throw new Exception("El shoppingCart esta inhabilitado");
+		}
+		return shoppingProductService.findShprByCarId(carId);
 	}
 
 	@Override

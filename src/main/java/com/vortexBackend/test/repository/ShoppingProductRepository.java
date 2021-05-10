@@ -1,5 +1,7 @@
 package com.vortexBackend.test.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,5 +17,8 @@ public interface ShoppingProductRepository extends JpaRepository<ShoppingProduct
 	
 	@Query("SELECT SUM(shpr.quantity) FROM ShoppingProduct shpr WHERE shpr.shoppingCart.carId=:carId")
 	public Integer totalItems(Integer carId);
+	
+	@Query("SELECT shpr FROM ShoppingProduct shpr WHERE shpr.shoppingCart.carId=:carId")
+	public List<ShoppingProduct> findShprByCarId(Integer carId);
 
 }

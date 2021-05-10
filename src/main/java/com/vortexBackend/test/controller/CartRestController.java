@@ -88,7 +88,28 @@ public class CartRestController {
 	
 		return ResponseEntity.ok().body(shoppingProductDTO);
 	}
+	@GetMapping("/findShprByCarId/{carId}")
+	public ResponseEntity<?> findShprByCarId(@PathVariable("carId") Integer carId) throws Exception {
 
+		List<ShoppingProduct> shoppingProducts = cartService.findShoppingProductByShoppingCart(carId);
+		if (shoppingProducts.isEmpty() == true || shoppingProducts == null) {
+			return ResponseEntity.ok().body(null);
+		}
+		List<ShoppingProductDTO> shoppingProductDTOs = shoppingProductMapper.toListShoppingProductDTO(shoppingProducts);
+
+		return ResponseEntity.ok().body(shoppingProductDTOs);
+
+	}
+	
+	@DeleteMapping("/removeProduct/{carId}/{proId}")
+	public ResponseEntity<?> removeProduct(@PathVariable("carId") Integer carId, @PathVariable("proId") String proId)
+			throws Exception {
+
+		cartService.removeProduct(carId, proId);
+
+	
+		return ResponseEntity.ok().build();
+	}
 	
 
 	
